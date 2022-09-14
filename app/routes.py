@@ -1,6 +1,6 @@
 from flask import render_template, jsonify, request, abort
 from app import app, db
-from .models import Booking, Status
+from .models import Reserv, Status
 
 
 @app.route('/')
@@ -11,7 +11,7 @@ def index():
 
 @app.route('/api/data', methods=['GET', 'POST'])
 def data():
-    query = db.session.query(Booking)
+    query = db.session.query(Reserv)
 
     # filter
     filter_model = request.get_json()['filterModel']
@@ -28,7 +28,7 @@ def data():
         for index in range(len(sort)):
             order_by = sort[index]['sort']
             field = sort[index]['colId']
-            col = getattr(Booking, field)
+            col = getattr(Reserv, field)
             if order_by == 'desc':
                 col = col.desc()
             order.append(col)
@@ -38,7 +38,7 @@ def data():
 
     else:
         query = query.order_by(
-            Booking.hotel_name, Booking.in_date, Booking.ref_id)
+            Reserv.hotel_name, Reserv.in_date, Reserv.ref_id)
 
     # infinite scroll
     if 'startRow' in request.get_json():
@@ -52,6 +52,9 @@ def data():
         'total_rows': total_rows
     })
 
+@app.route('/api/data/<int:id>', methods=['GET', 'POST'])
+def api_rate(id):
+    return {}, 200
 
 @app.route('/api/status', methods=['GET', 'POST'])
 def get_status():
@@ -63,8 +66,8 @@ def get_status():
 @app.route('/api/hotel', methods=['GET', 'POST'])
 def get_hotel():
 
-    query = Booking.query.with_entities(
-        Booking.hotel_name).distinct().order_by(Booking.hotel_name)
+    query = Reserv.query.with_entities(
+        Reserv.hotel_name).distinct().order_by(Reserv.hotel_name)
 
     data = []
     for row in query:
@@ -81,9 +84,9 @@ def load_filter():
 
     attr = request.get_json()['attr']
     filter_model = request.get_json()['filterModel']
-    col = getattr(Booking, attr)
+    col = getattr(Reserv, attr)
 
-    query = Booking.query.with_entities(col).distinct().order_by(col)
+    query = Reserv.query.with_entities(col).distinct().order_by(col)
 
     if filter_model:
         filter = build_filter(filter_model)
@@ -101,8 +104,8 @@ def update():
     data = request.get_json()
     if 'id' not in data:
         abort(400)
-    reserv = Booking.query.get(data['id'])
-    for field in Booking.__table__.columns.keys():
+    reserv = Reserv.query.get(data['id'])
+    for field in Reserv.__table__.columns.keys():
         if field in data and field != 'id':
             setattr(reserv, field, data[field])
     db.session.commit()
@@ -112,7 +115,7 @@ def update():
 def build_filter(filter_model):
     filter = []
     for attr, item in filter_model.items():
-        col = getattr(Booking, attr)
+        col = getattr(Reserv, attr)
 
         if item['filterType'] == 'date':
             if item['type'] == 'inRange':

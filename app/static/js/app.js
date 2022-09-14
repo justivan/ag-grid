@@ -271,6 +271,9 @@ const gridOptions = {
     }, 0);
   },
   masterDetail: true,
+  // isRowMaster: (dataItem) => {
+  //   return dataItem ? dataItem.callRecords.length > 0 : false;
+  // },
   detailRowAutoHeight: true,
   detailCellRendererParams: {
     detailGridOptions: {
@@ -331,8 +334,10 @@ const gridOptions = {
       },
     },
     getDetailRowData: (params) => {
-      // supply details records to detail cell renderer (i.e. detail grid)
-      params.successCallback(params.data.callRecords);
+      ajax("/api/data/" + params.data.id).then((response) => {
+        console.log(response)
+        // params.successCallback(response.data, response.total_rows);
+      });
     },
   },
 };

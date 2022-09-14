@@ -16,7 +16,7 @@ def pg_utcnow(element, compiler, **kw):
     return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
 
 
-class Booking(db.Model):
+class Reserv(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ref_id = db.Column(db.Integer, index=True, nullable=False)
     res_id = db.Column(db.Integer, index=True, nullable=False)
@@ -49,7 +49,7 @@ class Booking(db.Model):
     created_at = db.Column(db.DateTime, server_default=utcnow())
     updated_at = db.Column(
         db.DateTime, server_default=utcnow(), onupdate=utcnow())
-    # rates = db.relationship('DailyRate', backref='booking')
+    rates = db.relationship('ReservRate', backref='booking')
 
     @property
     def to_dict(self):
@@ -104,7 +104,7 @@ class Status(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    bookings = db.relationship('Booking', backref='status', lazy=True)
+    bookings = db.relationship('Reserv', backref='status', lazy=True)
 
     @property
     def to_dict(self):
@@ -112,3 +112,17 @@ class Status(db.Model):
             'value': self.id,
             'label': self.name
         }
+
+
+class ReservRate(db.Model):
+    reserv = db.Column(db.Integer, db.ForeignKey(
+        'reserv.id'), primary_key=True)
+    e_date = db.Column(db.DateTime, primary_key=True)
+    code = db.Column(db.String(225), nullable=False)
+    rate = db.Column(db.Float(), nullable=False)
+
+
+# class RateType(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String(50), nullable=False)
+#     bookings = db.relationship('Reserv', backref='rate_type', lazy=True)
