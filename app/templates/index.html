@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card h-100 rounded-0">
+  <div class="card-header">Reservation List</div>
+  <div class="card-body">
+    <div id="reserv-grid" class="ag-theme-alpine h-100"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="reserv-rate" tabindex="-1" aria-labelledby="reservRateLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="reservRateLabel">Price Breakdown</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="price-grid" class="ag-theme-alpine h-100"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
