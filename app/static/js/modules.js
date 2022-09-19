@@ -111,6 +111,7 @@ const reservColDefs = [
     cellClassRules: {
       "bg-danger bg-opacity-50": (params) => params.value <= 0,
     },
+    editable: true,
   },
   {
     field: "sales",
@@ -119,6 +120,7 @@ const reservColDefs = [
     cellClassRules: {
       "bg-danger bg-opacity-50": (params) => params.value <= 0,
     },
+    editable: true,
   },
   {
     headerName: "OprPrice",
@@ -128,6 +130,7 @@ const reservColDefs = [
     cellClassRules: {
       "bg-danger bg-opacity-50": (params) => params.value <= 0,
     },
+    editable: true,
   },
   {
     headerName: "Margin %",
@@ -163,6 +166,9 @@ const reservColDefs = [
 ];
 
 const reservGridOpts = {
+  getRowId: (params) => {
+    return params.data.id;
+  },
   columnDefs: reservColDefs,
   defaultColDef: {
     filter: true,
@@ -188,7 +194,7 @@ const reservGridOpts = {
       },
     },
     numberColumn: {
-      valueFormatter: (params) => params.value.toFixed(2),
+      valueFormatter: (params) => parseFloat(params.value).toFixed(2),
       cellClass: "text-end",
       filter: "agNumberColumnFilter",
       filterParams: {
@@ -210,6 +216,43 @@ const reservGridOpts = {
   serverSideInfiniteScroll: true,
   cacheBlockSize: 50,
   maxBlocksInCache: 10,
+  processCellForClipboard: (params) => {
+    switch (params.column.colId) {
+      case "status_id":
+        return params.node.data.status;
+        break;
+      case "sales_date":
+        return new Date(params.value).toLocaleDateString("en-GB");
+        break;
+      case "in_date":
+        return new Date(params.value).toLocaleDateString("en-GB");
+        break;
+      case "out_date":
+        return new Date(params.value).toLocaleDateString("en-GB");
+        break;
+      default:
+        return params.value;
+    }
+  },
+  processCellFromClipboard: (params) => {
+    let field = params.column.colId;
+    let value = params.value;
+
+    if (field == "status_id") {
+      let objArray = params.column.colDef.cellEditorParams.values;
+      value = objArray.find((obj) => obj.label === params.value).value;
+    } else if (["purchase", "sales", "opr_cost"].includes(field)) {
+      value = value.replace(/[^\d].+/, "");
+    }
+    return value;
+  },
+  onCellValueChanged: (params) => {
+    body = {
+      id: params.data.id,
+      [params.colDef.field]: params.newValue,
+    };
+    ajax("/api/update", body).then((response) => response);
+  },
 };
 
 async function ajax(url = "", data = {}) {
