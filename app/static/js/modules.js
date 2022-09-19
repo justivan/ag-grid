@@ -217,21 +217,14 @@ const reservGridOpts = {
   cacheBlockSize: 50,
   maxBlocksInCache: 10,
   processCellForClipboard: (params) => {
-    switch (params.column.colId) {
-      case "status_id":
-        return params.node.data.status;
-        break;
-      case "sales_date":
-        return new Date(params.value).toLocaleDateString("en-GB");
-        break;
-      case "in_date":
-        return new Date(params.value).toLocaleDateString("en-GB");
-        break;
-      case "out_date":
-        return new Date(params.value).toLocaleDateString("en-GB");
-        break;
-      default:
-        return params.value;
+    let field = params.column.colId;
+
+    if (field == "status_id") {
+      return params.node.data.status;
+    } else if (["sales_date", "in_date", "out_date"].includes(field)) {
+      return new Date(params.value).toLocaleDateString("en-GB");
+    } else {
+      return params.value;
     }
   },
   processCellFromClipboard: (params) => {
