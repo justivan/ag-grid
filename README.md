@@ -1,7 +1,7 @@
 ## To Do
 
 ### Grid
-1. [ ] **Reserv Grid Options**
+- [ ] **Reserv Grid Options**
     - [ ] Column Definitions
         - [ ] Loading spinner
         - [ ] GWG reservation link
@@ -9,11 +9,17 @@
     - [ ] Custom Column Types
         - [ ] Number
         - [ ] Date
-    - [ ] Filters
-        - [ ] Filter routes
-        - [ ] 
+    - [ ] Filter
+        - [ ] Clear/Apply button
+        - [ ] Set filter params (func)
+    - [ ] Column Menu
+        - [ ] General menu
+    - [ ] Cell change flash
+    - [ ] Row ID
+    - [ ] Save data
+    - [ ] Clipboard
 
-2. [ ] **Custom Components**
+- [ ] **Custom Components**
     - [ ] DatePicker
     - [ ] Choices JS
         - [ ] Status
@@ -21,5 +27,6 @@
     - [ ] ToolTip
 
 
-#### Endpoints
-1. [ ] All Data
+### Endpoints
+- [ ] CRUD
+- [ ] Log In

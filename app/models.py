@@ -1,3 +1,4 @@
+from ast import operator
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.types import DateTime
@@ -18,10 +19,8 @@ def pg_utcnow(element, compiler, **kw):
 
 class Reserv(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    ref_id = db.Column(db.Integer, index=True, nullable=False)
+    ref_id = db.Column(db.Integer, index=True, unique=True, nullable=False)
     res_id = db.Column(db.Integer, index=True, nullable=False)
-    hotel_name = db.Column(db.String(100), index=True, nullable=False)
-    opr_name = db.Column(db.String(10), index=True, nullable=False)
     opr_code = db.Column(db.String(10), nullable=False)
     bkg_ref = db.Column(db.String(100), index=True, nullable=False)
     guest_name = db.Column(db.String(100), nullable=False)
@@ -44,16 +43,19 @@ class Reserv(db.Model):
     gwg_s_id = db.Column(db.Integer, nullable=False)
     gwg_s_name = db.Column(db.String(225), nullable=False)
     gwg_s_code = db.Column(db.String(225), nullable=False)
-    status_id = db.Column(db.Integer, db.ForeignKey(
-        'status.id'), nullable=False, server_default=text("1"))
     created_at = db.Column(db.DateTime, server_default=utcnow())
     updated_at = db.Column(
         db.DateTime, server_default=utcnow(), onupdate=utcnow())
     rates = db.relationship('ReservRate', backref='booking')
+    status_id = db.Column(db.Integer, db.ForeignKey(
+        'status.id'), nullable=False, server_default=text("1"))
+    operator_id = db.Column(db.Integer, db.ForeignKey(
+        'operator.id'), nullable=False)
+    hotel_id = db.Column(db.Integer, db.ForeignKey(
+        'hotel.id'), nullable=False)
 
     @property
     def to_dict(self):
-        dt_fmt = '%d/%m/%Y'
         getcontext().prec = 2
 
         def custom_div(numerator, denominator):
@@ -115,14 +117,46 @@ class Status(db.Model):
 
 
 class ReservRate(db.Model):
-    reserv = db.Column(db.Integer, db.ForeignKey(
+    reserv_id = db.Column(db.Integer, db.ForeignKey(
         'reserv.id'), primary_key=True)
     e_date = db.Column(db.DateTime, primary_key=True)
-    code = db.Column(db.String(225), nullable=False)
-    rate = db.Column(db.Float(), nullable=False)
+    base_rate = db.Column(db.Float())
+    adult_supp = db.Column(db.Float(), server_default=text("0"))
+    child_supp = db.Column(db.Float(), server_default=text("0"))
+    adult_meal = db.Column(db.Float(), server_default=text("0"))
+    child_meal = db.Column(db.Float(), server_default=text("0"))
+    peak_supp = db.Column(db.Float(), server_default=text("0"))
+    extras = db.Column(db.Float(), server_default=text("0"))
+    base_rate_disc = db.Column(db.Float(), server_default=text("0"))
+    adult_supp_disc = db.Column(db.Float(), server_default=text("0"))
+    child_supp_disc = db.Column(db.Float(), server_default=text("0"))
+    meal_disc = db.Column(db.Float(), server_default=text("0"))
+    peak_supp_disc = db.Column(db.Float(), server_default=text("0"))
+    extras_disc = db.Column(db.Float(), server_default=text("0"))
+    mark_up = db.Column(db.Float(), server_default=text("0"))
+    gwg_p_id = db.Column(db.Integer, server_default=text("0"))
+    gwg_p_code = db.Column(db.String(225))
+    gwg_s_id = db.Column(db.Integer, nullable=False,
+                         server_default=text("0"))
+    gwg_s_code = db.Column(db.String(225))
 
 
-# class RateType(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(50), nullable=False)
-#     bookings = db.relationship('Reserv', backref='rate_type', lazy=True)
+class Operator(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    short_name = db.Column(db.String(10), nullable=False)
+    category = db.Column(db.String(2), nullable=False)
+    bookings = db.relationship('Reserv', backref='operator', lazy=True)
+
+class Hotel(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    purc_mgr_id = db.Column(db.String(2), db.ForeignKey(
+        'purchase_mgr.id'))
+    bookings = db.relationship('Reserv', backref='hotel', lazy=True)
+
+class PurchaseMgr(db.Model):
+    id = db.Column(db.String(2), primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    hotels = db.relationship('Hotel', backref='manager', lazy=True)
