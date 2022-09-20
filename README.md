@@ -1,7 +1,7 @@
 ## To Do
 
 ### Grid
-- [ ] 1. **Reserv Grid Options**
+1. [ ] **Reserv Grid Options**
     - [ ] Column Definitions
         - [ ] Loading spinner
         - [ ] GWG reservation link
@@ -13,7 +13,7 @@
         - [ ] Filter routes
         - [ ] 
 
-- [ ] 2. **Custom Components**
+2. [ ] **Custom Components**
     - [ ] DatePicker
     - [ ] Choices JS
         - [ ] Status
