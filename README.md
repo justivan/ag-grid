@@ -1,4 +1,9 @@
-### To Do ###
+#### To Do
 
-- [x] Copy
+1. Reserv Grid Options
+    - [] Column Definitions
 
+2. Custom Components
+    - [] DatePicker
+    - [] Choices JS
+    - [] ToolTip
