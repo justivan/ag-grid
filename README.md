@@ -1,7 +1,7 @@
-### To Do
+## To Do
 
-#### Grid
-1. [ ] Reserv Grid Options
+### Grid
+1. Reserv Grid Options
     - [ ] Column Definitions
         - [ ] Loading spinner
         - [ ] GWG reservation link
