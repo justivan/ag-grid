@@ -149,14 +149,23 @@ class Operator(db.Model):
     bookings = db.relationship('Reserv', backref='operator', lazy=True)
 
 class Hotel(db.Model):
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
+    country = db.Column(db.String(2), nullable=False)
+    state = db.Column(db.String(20), nullable=False)
     purc_mgr_id = db.Column(db.String(2), db.ForeignKey(
         'purchase_mgr.id'))
     bookings = db.relationship('Reserv', backref='hotel', lazy=True)
+    mapping = db.relationship('HotelMapping', backref='hotel', lazy=True)
 
 class PurchaseMgr(db.Model):
     id = db.Column(db.String(2), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     hotels = db.relationship('Hotel', backref='manager', lazy=True)
+
+class HotelMapping(db.Model):
+    mpae_id = db.Column(db.Integer, db.ForeignKey(
+        'hotel.id'), primary_key=True)
+    gwg_id = db.Column(db.Integer, primary_key=True)
+    gwg_hotel_name = db.Column(db.String(120), nullable=False)
